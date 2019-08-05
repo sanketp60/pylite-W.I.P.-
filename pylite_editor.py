@@ -2,20 +2,20 @@ from tkinter import *
 from tkinter import messagebox
 import os
 import sys
-
+from tkinter.filedialog import *
 class editor(Tk):
     
     def __init__(self):
         Tk.__init__(self)
-
         #Preference Variables
-        textspace_bg=StringVar()
-        textspace_bg.set("#000066")
-        textspace_fg=StringVar()
-        textspace_fg.set("#ffffff")
+        self.textspace_bg=StringVar()
+        self.textspace_bg.set("#000066")
+        self.textspace_fg=StringVar()
+        self.textspace_fg.set("#ffffff")
+        self.current_file="None"
+        
         #Editor window begins
         self.title("pylite")
-    
         menubar = Menu(self)
 
         #File Menu Configs
@@ -39,6 +39,11 @@ class editor(Tk):
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="About", command=self.help_about)
         menubar.add_cascade(label="Help", menu=helpmenu)
+
+        #Test Menu Configs
+        testmenu = Menu(menubar, tearoff=0)
+        testmenu.add_command(label="Test action", command=self.testaction)
+        menubar.add_cascade(label="Test", menu=testmenu)
         
         #Shortcut Mapping
         self.bind_all("<Control-n>", self.file_new)
@@ -49,21 +54,41 @@ class editor(Tk):
         self.config(menu=menubar) #Enable menubar
 
         
-        #Introduce textspace
-        textspace=Text(self, bg=textspace_bg.get(), fg=textspace_fg.get())
-        textspace.pack(expand=True, fill=BOTH, side=LEFT)
-
-        scrolly=Scrollbar(self, command=textspace.yview)
+        #Introduce self.textspace
+        self.textspace=Text(self, bg=self.textspace_bg.get(), fg=self.textspace_fg.get())
+        self.textspace.pack(expand=True, fill=BOTH, side=LEFT)
+    
+        #Introduced Y Scrollbar   
+        scrolly=Scrollbar(self, command=self.textspace.yview)
         scrolly.pack(side=RIGHT, fill=Y)
-        textspace['yscrollcommand'] = scrolly.set
+        self.textspace['yscrollcommand'] = scrolly.set
+        
+        
+        #Info Label
+        #Working
+        self.current_line=StringVar()
+        self.current_line.set(self.textspace.index(INSERT))
+        self.infolabel=Label(self, text=self.current_line.get()).pack()
+        self.current_line.trace("w", print("Changed"))
+        
 
-
+        
         
     #File Methods
     def file_new(self, *args):
         print("New file")
     def file_open(self, *args):
         print("Open file")
+        print(self.current_file)
+        self.current_file=askopenfilename(defaultextension=".py", filetypes=[("Python Files","*.py"),("Text Documents","*.txt"),("All Files","*.*")])
+        print(self.current_file)
+        print(type(self.current_file))
+        print(self.textspace)
+        if(self.current_file==""):
+            self.current_file="None"
+        else:
+            file=open(self.current_file, 'r')
+            self.textspace.insert(INSERT, file.read())
     def file_save(self, *args):
         print("Save file")
     def file_saveas(self):
@@ -74,6 +99,9 @@ class editor(Tk):
             self.destroy()
         else:
             return
+    def testaction(self):
+        print("Test action triggered")
+        print(self.textspace.index(INSERT))
             
     
     #Edit Methods
@@ -94,4 +122,5 @@ class editor(Tk):
 #Initialize editor
 if __name__ == "__main__":
     app = editor()
+    app.protocol("WM_DELETE_WINDOW", app.file_exit)
     app.mainloop()
