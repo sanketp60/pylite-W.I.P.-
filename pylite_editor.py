@@ -3,15 +3,16 @@ from tkinter import messagebox
 import os
 import sys
 from tkinter.filedialog import *
+
 class editor(Tk):
     
     def __init__(self):
         Tk.__init__(self)
         #Preference Variables
-        self.textspace_bg=StringVar()
-        self.textspace_bg.set("#000066")
-        self.textspace_fg=StringVar()
-        self.textspace_fg.set("#ffffff")
+        self.textspace_bg=StringVar(self)
+        self.textspace_bg.set("#ffffff")
+        self.textspace_fg=StringVar(self)
+        self.textspace_fg.set("#000000")
         self.current_file="None"
         
         #Editor window begins
@@ -52,7 +53,6 @@ class editor(Tk):
         self.bind_all("<Control-c>", self.edit_copy)
         
         self.config(menu=menubar) #Enable menubar
-
         
         #Introduce self.textspace
         self.textspace=Text(self, bg=self.textspace_bg.get(), fg=self.textspace_fg.get())
@@ -60,20 +60,16 @@ class editor(Tk):
     
         #Introduced Y Scrollbar   
         scrolly=Scrollbar(self, command=self.textspace.yview)
-        scrolly.pack(side=RIGHT, fill=Y)
+        scrolly.pack(side=LEFT, fill=Y)
         self.textspace['yscrollcommand'] = scrolly.set
         
-        
         #Info Label
-        #Working
-        self.current_line=StringVar()
-        self.current_line.set(self.textspace.index(INSERT))
-        self.infolabel=Label(self, text=self.current_line.get()).pack()
-        self.current_line.trace("w", print("Changed"))
-        
-
-        
-        
+        #Pending
+        self.current_line=StringVar(self, value=self.textspace.index(INSERT))
+        self.infolabel=Label(self, textvariable=self.current_line).pack()
+        self.bind_all("<Key>", self.update_line)
+        self.bind_all("<Button-1>", self.update_line)
+                
     #File Methods
     def file_new(self, *args):
         print("New file")
@@ -89,6 +85,7 @@ class editor(Tk):
         else:
             file=open(self.current_file, 'r')
             self.textspace.insert(INSERT, file.read())
+        self.update_line()
     def file_save(self, *args):
         print("Save file")
     def file_saveas(self):
@@ -98,10 +95,7 @@ class editor(Tk):
         if exit_decision == "yes":
             self.destroy()
         else:
-            return
-    def testaction(self):
-        print("Test action triggered")
-        print(self.textspace.index(INSERT))
+            pass
             
     
     #Edit Methods
@@ -114,9 +108,16 @@ class editor(Tk):
 
     #Help Methods
     def help_about(self):
-        messagebox.showinfo("About",
-        """Welcome to pylite! Developed by sanketp60""")
-    
+        messagebox.showinfo("About", "Welcome to pylite! Developed by sanketp60")
+
+    #Test Methods
+    def testaction(self):
+        print("Test")
+    def print_test(self, *args):
+        print("Test")
+        
+    #Update Method (Annonymous)
+    update_line=lambda self, *args: self.current_line.set(self.textspace.index(INSERT))
         
         
 #Initialize editor
