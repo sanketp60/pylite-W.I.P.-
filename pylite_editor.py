@@ -16,7 +16,7 @@ class editor(Tk):
         self.current_file="None"
         
         #Editor window begins
-        self.title("pylite")
+        self.title("Untitled"+" - "+"pylite")
         menubar = Menu(self)
 
         #File Menu Configs
@@ -86,6 +86,7 @@ class editor(Tk):
             file=open(self.current_file, 'r')
             self.textspace.insert(INSERT, file.read())
         self.update_line()
+        self.title(self.current_file.split("/")[-1]+" - "+"pylite")
     def file_save(self, *args):
         print("Save file")
     def file_saveas(self):
