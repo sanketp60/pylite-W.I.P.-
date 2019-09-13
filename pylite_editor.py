@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
 import os
-import sys
 from tkinter.filedialog import *
 
 class editor(Tk):
@@ -35,7 +34,8 @@ class editor(Tk):
         editmenu.add_command(label="Cut         CTRL+X", command=self.edit_cut)
         editmenu.add_command(label="Paste      CTRL+V", command=self.edit_paste)
         menubar.add_cascade(label="Edit", menu=editmenu)
-
+	
+	#testcomment
         #Help Menu COnfigs
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="About", command=self.help_about)
